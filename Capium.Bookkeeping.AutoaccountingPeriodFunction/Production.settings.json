@@ -1,0 +1,110 @@
+{
+  "AzureKeyVaultConfiguration": {
+    "AzureKeyVaultSharedEndpoint": "https://kv-cp5appshared-prod-01.vault.azure.net/",
+    "AzureKeyVaultDedicatedEndpoint": "https://kv-cp5bookkeeping-prod.vault.azure.net/",
+    "UseClientCredentials": true,
+    "IdentityServerCertificateName": "crt-prod-capium",
+    "DataProtectionKeyIdentifier": "",
+    "ReadConfigurationFromKeyVault": true,
+    "TenantId": "f99d12fe-54d6-4bd5-ba7f-8c849f2ba489"
+  },
+  "AzureKeyVaultSettings": {
+    "AzureKeyVaultSharedEndpoint": "https://kv-cp5appshared-prod-01.vault.azure.net/",
+    "AzureKeyVaultDedicatedEndpoint": "https://kv-cp5bookkeeping-prod.vault.azure.net/",
+    "DataProtectionKeyIdentifier": "",
+    "IdentityServerCertificateName": "crt-prod-capium",
+    "ReadConfigurationFromKeyVault": true,
+    "UseClientCredentials": true,
+    "TenantId": "f99d12fe-54d6-4bd5-ba7f-8c849f2ba489"
+  },
+  "ElasticSearchApp": "Prod-Bookkeeping",
+  "IsEncrypted": false,
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console"
+    ],
+    "MinimumLevel": {
+      "Default": "Debug",
+      "Override": {
+        "Default": "Debug",
+        "Microsoft": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Logger",
+        "Args": {
+          "configureLogger": {
+            "Filter": [
+              {
+                "Name": "ByIncludingOnly",
+                "Args": {
+                  "expression": "(@Level = 'Error' or @Level = 'Fatal' or @Level = 'Warning')"
+                }
+              }
+            ],
+            "WriteTo": [
+              {
+                "Name": "File",
+                "Args": {
+                  "path": "../logs/webapi_exceptions-.log",
+                  "rollingInterval": "Day",
+                  "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {CorrelationId} {Level:u3}] {Username} {Message:lj}{NewLine}{Exception}"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Name": "Logger",
+        "Args": {
+          "configureLogger": {
+            "Filter": [
+              {
+                "Name": "ByIncludingOnly",
+                "Args": {
+                  "expression": "(@Level = 'Information' or @Level = 'Debug')"
+                }
+              }
+            ],
+            "WriteTo": [
+              {
+                "Name": "File",
+                "Args": {
+                  "path": "../logs/webapi_info-.log",
+                  "rollingInterval": "Day",
+                  "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {CorrelationId} {Level:u3}] {Username} {Message:lj}{NewLine}{Exception}"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName"
+    ],
+    "Properties": {
+      "Application": "MultipleLogFilesSample"
+    },
+    "Args": {
+      "configure": [
+        {
+          "Name": "Console",
+          "Args": {
+            "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+            "formatter": "Serilog.Formatting.Compact.RenderedCompactJsonFormatter, Serilog.Formatting.Compact"
+          }
+        }
+      ]
+    }
+  },
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"
+  },
+  "BKFuncApiURL": "func-RecurringInvoice-Production"
+}
